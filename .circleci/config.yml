@@ -37,18 +37,19 @@ jobs:
     steps:
     - checkout
     - aws-cli/setup:
-        profile-name: default
-        aws-region: us-east-1
+        profile-name: "default"
+        aws-region: "us-east-1"
   save-ip:
     docker:
       - image: alpine:latest
     
     steps:
+      - checkout
       - run:
           command: | 
             mkdir ~/test
             cd ~/test
-            aws configure 
+            echo "[all]" >> inventory.txt
             aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' \
             --filters "Name=tag:Project,Values=udacity" \
             --output text >> inventory.txt
