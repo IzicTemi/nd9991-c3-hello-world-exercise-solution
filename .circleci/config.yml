@@ -45,7 +45,6 @@ jobs:
     
     steps:
       - checkout
-      - config-aws
       - run:
           command: | 
             mkdir ~/test
