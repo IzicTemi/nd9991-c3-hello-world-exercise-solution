@@ -31,26 +31,20 @@ commands:
 
 jobs:
 
-  config-aws:
-    executor: aws-cli/default
-    steps:
-    - checkout
-    - aws-cli/install
-    - aws-cli/setup:
-        profile-name: "default"
-
   save-ip:
     docker:
-      - image: amazon/aws-cli
+      - image: alpine:latest
     
     steps:
       - checkout
+      - aws-cli/install
+      - aws-cli/setup:
+          profile-name: "default"
       - run:
           command: | 
             mkdir ~/test
             cd ~/test
             echo "[all]" >> inventory.txt
-            sudo yum install tar
             aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' \
             --filters "Name=tag:Project,Values=udacity" \
             --output text >> inventory.txt
@@ -69,7 +63,4 @@ workflows:
     # Run the welcome/run job in its own container
     jobs:
       # - welcome/run
-      - config-aws
-      - save-ip:
-          requires:
-           - config-aws
+      - save-ip
