@@ -31,29 +31,18 @@ commands:
 
 jobs:
 
-  save-ip:
+  create_infrastructure: 
     docker:
-      - image: circleci/node:13.8.0
-    
+      - image: amazon/aws-cli
     steps:
       - checkout
-      - aws-cli/install
-      - aws-cli/setup:
-          profile-name: "default"
       - run:
-          command: | 
-            mkdir ~/test
-            cd ~/test
-            echo "[all]" >> inventory.txt
-            aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' \
-            --filters "Name=tag:Project,Values=udacity" \
-            --output text >> inventory.txt
-      - persist_to_workspace:
-          root: ~/test
-          paths:
-            - inventory.txt
-          
-      
+          name: Create Cloudformation Stack
+          command: |
+            aws cloudformation deploy \
+            --template-file template.yml \
+            --stack-name myStack-${CIRCLE_WORKFLOW_ID:0:5} \
+            --region us-east-1
 
 
 
@@ -63,4 +52,4 @@ workflows:
     # Run the welcome/run job in its own container
     jobs:
       # - welcome/run
-      - save-ip
+      - create_infrastructure
