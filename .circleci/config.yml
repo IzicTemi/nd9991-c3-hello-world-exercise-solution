@@ -60,7 +60,7 @@ jobs:
             else
               return 1
             fi
-      - destroy-environment
+      - destroy_environment
   # Exercise - Rollback
   create_infrastructure: 
     docker:
